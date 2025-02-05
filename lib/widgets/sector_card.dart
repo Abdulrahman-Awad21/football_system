@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/player_view_model.dart';
-import 'sector_details_screen.dart';
+import '../views/sector_details_screen.dart'; 
 
 class SectorCard extends StatelessWidget {
   final String sectorName;
@@ -19,7 +19,7 @@ class SectorCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SectorDetailsScreen(sectorName: sectorName),
+              builder: (context) => SectorDetailsScreen(sectorName: sectorName),  // Use SectorDetailsScreen
             ),
           );
         },

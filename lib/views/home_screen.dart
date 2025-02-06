@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../view_models/player_view_model.dart';
-import 'add_player_screen.dart';
+import 'package:football_system/views/add_player_screen.dart';
 import '../widgets/sector_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,10 +16,13 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AddPlayerScreen()),
-        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddPlayerScreen()), // Navigate to AddPlayerScreen (global)
+          );
+        },
         child: Icon(Icons.add),
       ),
     );

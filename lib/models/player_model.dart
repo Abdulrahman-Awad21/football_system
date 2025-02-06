@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Player {
-  String? id; // Make id nullable
-  final String? name; //Name can be nullable in case of a failure
-  final String? sector; //Name can be nullable in case of a failure
+  String? id;
+  final String? name;
+  final String? sector;
   final String? subsector;
-  final DateTime? birthdate; //birthdate can be nullable
-  final bool? paymentStatus; //paymentStatus can be nullable
-  final DateTime? lastPaymentDate; //lastPaymentDate can be nullable
-  final DateTime? nextRenewalDate; //nextRenewalDate can be nullable
-  final String? qrCode; //qrCode can be nullable
+  final DateTime? birthdate;
+  final bool? paymentStatus;
+  final DateTime? lastPaymentDate;
+  final DateTime? nextRenewalDate;
+  final String? qrCode;
+  final String? imageUrl;
 
   Player({
-    this.id, // id is now optional
+    this.id,
     required this.name,
     required this.sector,
     this.subsector,
@@ -21,21 +22,23 @@ class Player {
     required this.lastPaymentDate,
     required this.nextRenewalDate,
     required this.qrCode,
+    this.imageUrl,
   });
 
   factory Player.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,) {
     final data = snapshot.data();
     return Player(
-      id: snapshot.id, // Get ID from document snapshot
+      id: snapshot.id,
       name: data?['name'],
       sector: data?['sector'],
       subsector: data?['subsector'],
-      birthdate: (data?['birthdate'] as Timestamp).toDate(), // Convert Timestamp
+      birthdate: (data?['birthdate'] as Timestamp).toDate(),
       paymentStatus: data?['paymentStatus'],
       lastPaymentDate: (data?['lastPaymentDate'] as Timestamp).toDate(),
       nextRenewalDate: (data?['nextRenewalDate'] as Timestamp).toDate(),
       qrCode: data?['qrCode'],
+      imageUrl: data?['imageUrl'],
     );
   }
 
@@ -49,6 +52,7 @@ class Player {
       'lastPaymentDate': lastPaymentDate,
       'nextRenewalDate': nextRenewalDate,
       'qrCode': qrCode,
+      'imageUrl': imageUrl,
     };
   }
 }

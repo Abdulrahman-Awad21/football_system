@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/player_view_model.dart';
 import '../models/player_model.dart';
-import 'add_player_screen.dart'; // Import AddPlayerScreen
+import 'add_player_screen.dart';
 import 'package:intl/intl.dart'; // Import intl package to handle cash values with symbols
 
 class SectorDetailsScreen extends StatelessWidget {

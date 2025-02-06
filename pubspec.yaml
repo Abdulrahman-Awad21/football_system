@@ -30,10 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  intl:
   firebase_core: ^2.15.0  # Use the latest version
   cloud_firestore: ^4.8.0
+  firebase_storage: ^11.6.0 # Add this line
   provider: ^6.0.0  # Use the latest version
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

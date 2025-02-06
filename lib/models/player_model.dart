@@ -1,16 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Player {
-  final String id;
-  final String name;
-  final String sector;
+  String? id; // Make id nullable
+  final String? name; //Name can be nullable in case of a failure
+  final String? sector; //Name can be nullable in case of a failure
   final String? subsector;
-  final DateTime birthdate;
-  final bool paymentStatus;
-  final DateTime lastPaymentDate;
-  final DateTime nextRenewalDate;
-  final String qrCode;
+  final DateTime? birthdate; //birthdate can be nullable
+  final bool? paymentStatus; //paymentStatus can be nullable
+  final DateTime? lastPaymentDate; //lastPaymentDate can be nullable
+  final DateTime? nextRenewalDate; //nextRenewalDate can be nullable
+  final String? qrCode; //qrCode can be nullable
 
   Player({
-    required this.id,
+    this.id, // id is now optional
     required this.name,
     required this.sector,
     this.subsector,
@@ -21,23 +23,24 @@ class Player {
     required this.qrCode,
   });
 
-  factory Player.fromMap(Map<String, dynamic> data) {
+  factory Player.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot,
+      SnapshotOptions? options,) {
+    final data = snapshot.data();
     return Player(
-      id: data['id'],
-      name: data['name'],
-      sector: data['sector'],
-      subsector: data['subsector'],
-      birthdate: data['birthdate'].toDate(),
-      paymentStatus: data['paymentStatus'],
-      lastPaymentDate: data['lastPaymentDate'].toDate(),
-      nextRenewalDate: data['nextRenewalDate'].toDate(),
-      qrCode: data['qrCode'],
+      id: snapshot.id, // Get ID from document snapshot
+      name: data?['name'],
+      sector: data?['sector'],
+      subsector: data?['subsector'],
+      birthdate: (data?['birthdate'] as Timestamp).toDate(), // Convert Timestamp
+      paymentStatus: data?['paymentStatus'],
+      lastPaymentDate: (data?['lastPaymentDate'] as Timestamp).toDate(),
+      nextRenewalDate: (data?['nextRenewalDate'] as Timestamp).toDate(),
+      qrCode: data?['qrCode'],
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
       'name': name,
       'sector': sector,
       'subsector': subsector,

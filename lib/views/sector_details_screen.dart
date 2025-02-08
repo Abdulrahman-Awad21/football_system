@@ -3,293 +3,167 @@ import 'package:provider/provider.dart';
 import '../view_models/player_view_model.dart';
 import '../models/player_model.dart';
 import 'add_player_screen.dart';
-import 'package:intl/intl.dart'; // Import intl package to handle cash values with symbols
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'player_profile_screen.dart';
 
-class SectorDetailsScreen extends StatelessWidget {
+class SectorDetailsScreen extends StatefulWidget {
   final String sectorName;
 
   SectorDetailsScreen({required this.sectorName});
 
   @override
+  _SectorDetailsScreenState createState() => _SectorDetailsScreenState();
+}
+
+class _SectorDetailsScreenState extends State<SectorDetailsScreen> {
+  String? _searchQuery;
+  MobileScannerController cameraController = MobileScannerController();
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<PlayerViewModel>(context, listen: false).fetchPlayersBySector(widget.sectorName);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('$sectorName Players')),
+      appBar: AppBar(title: Text('${widget.sectorName} Players')),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
+              children: [
+                // Search Bar
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Search by name or ID',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    // Perform search (implementation details depend on your data structure)
+                  },
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () {
+                    _scanQrCode(context);
+                  },
+                  icon: Icon(Icons.qr_code_scanner),
+                  label: Text('Scan Player ID'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Navigate to AddPlayerScreen, pre-filling the sector
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AddPlayerScreenForSector(sector: sectorName), // Navigate to AddPlayerScreenForSector
+                        builder: (context) => AddPlayerScreen(initialSector: widget.sectorName),
                       ),
                     );
                   },
-                  child: Text('Add Player'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement Scan Player Card functionality
-                    print('Scan Player Card pressed');
-                  },
-                  child: Text('Scan Player Card'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement Search Player functionality
-                    print('Search Player pressed');
-                  },
-                  child: Text('Search Player'),
+                  icon: Icon(Icons.add),
+                  label: Text('Add Player'),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: PlayerList(sectorName: sectorName),
-          ),
-          InvoiceSummary(sectorName: sectorName),
-        ],
-      ),
-    );
-  }
-}
+            child: Consumer<PlayerViewModel>(
+              builder: (context, playerViewModel, child) {
+                List<Player> players = playerViewModel.players
+                    .where((player) => player.sector == widget.sectorName)
+                    .toList();
 
-class PlayerList extends StatelessWidget {
-  final String sectorName;
-
-  const PlayerList({Key? key, required this.sectorName}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<PlayerViewModel>(
-      builder: (context, playerViewModel, child) {
-        final players = playerViewModel.players
-            .where((player) => (player.sector ?? '') == sectorName)
-            .toList();
-
-        return ListView.builder(
-          itemCount: players.length,
-          itemBuilder: (context, index) {
-            final player = players[index];
-            return ListTile(
-              title: Text(player.name ?? "No Name Provided"),
-              subtitle: Text(player.sector ?? "No Sector Provided"),
-              trailing: Icon(Icons.arrow_forward),
-              onTap: () {
-                // TODO: Implement Navigate to player profile screen
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-class InvoiceSummary extends StatelessWidget {
-  final String sectorName;
-
-  const InvoiceSummary({Key? key, required this.sectorName}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<PlayerViewModel>(
-      builder: (context, playerViewModel, child) {
-        final players = playerViewModel.players
-            .where((player) => (player.sector ?? '') == sectorName)
-            .toList();
-
-        // Calculate the total invoice for all players in the sector
-        double totalInvoice = 0;
-        for (var player in players) {
-          //In order to calculate the invoice, we need to get the sector payment details and calculate the overdue date
-          totalInvoice += 1500 ; // this value needs to be changed for the value on the database
-        }
-
-        return Container(
-          padding: EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Invoice Summary',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text('Number of Players: ${players.length}'),
-              Text('Total Invoice: ${NumberFormat.currency(locale: 'en_US', symbol: '\$').format(totalInvoice)}'),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-// New AddPlayerScreen for Sector Details Screen.
-// Inheriting from the first add_player_screen
-class AddPlayerScreenForSector extends StatelessWidget {
-  final String sector;
-
-  const AddPlayerScreenForSector({Key? key, required this.sector}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Add Player to $sector')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: AddPlayerFormSector(sector: sector),
-      ),
-    );
-  }
-}
-
-//A new implementation of AddPlayerForm, specialized for the sector
-class AddPlayerFormSector extends StatefulWidget {
-  final String sector;
-
-  const AddPlayerFormSector({Key? key, required this.sector}) : super(key: key);
-  @override
-  _AddPlayerFormStateSector createState() => _AddPlayerFormStateSector();
-}
-
-class _AddPlayerFormStateSector extends State<AddPlayerFormSector> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _birthdateController = TextEditingController();
-  DateTime? _birthdate;
-  String? _selectedSubsector;
-
-
-  final List<String> _subsectors = ["A", "B"];
-
-  @override
-  void dispose() {
-    _birthdateController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Name
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Name'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a name';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-
-          // Birthdate
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: _birthdateController,
-                  decoration: InputDecoration(
-                    labelText: 'Birthdate',
-                    hintText: 'Select Birthdate',
-                  ),
-                  enabled: false,
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.calendar_today),
-                onPressed: () async {
-                  final DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: _birthdate ?? DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime.now(),
-                  );
-
-                  if (pickedDate != null) {
-                    setState(() {
-                      _birthdate = pickedDate;
-                      _birthdateController.text =
-                          DateFormat('yyyy-MM-dd').format(_birthdate!);
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-
-
-          // Subsector (Optional)
-          Text("Select Subsector (Optional)", style: TextStyle(fontWeight: FontWeight.bold)),
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(border: OutlineInputBorder()),
-            value: _selectedSubsector,
-            items: _subsectors.map((String subsector) {
-              return DropdownMenuItem<String>(
-                value: subsector,
-                child: Text("Sector $subsector"),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedSubsector = newValue;
-              });
-            },
-          ),
-          SizedBox(height: 20),
-
-          // Add Player Button
-          ElevatedButton(
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                //Check if _birthdate is null
-                if (_birthdate == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please select a birthdate.')),
-                  );
-                  return;
+                if (_searchQuery != null && _searchQuery!.isNotEmpty) {
+                  players = players.where((player) =>
+                      (player.name?.toLowerCase().contains(_searchQuery!.toLowerCase()) == true) ||
+                      (player.id?.toLowerCase().contains(_searchQuery!.toLowerCase()) == true)
+                  ).toList();
                 }
-                final player = Player(
-                  id: null,
-                  name: _nameController.text,
-                  sector: widget.sector,
-                  subsector: _selectedSubsector,
-                  birthdate: _birthdate!, // assert that _birthdate is not null
-                  paymentStatus: false,
-                  lastPaymentDate: DateTime.now(),
-                  nextRenewalDate: DateTime.now(),
-                  qrCode: 'qr_code_placeholder',
+
+                return ListView.builder(
+                  itemCount: players.length,
+                  itemBuilder: (context, index) {
+                    final player = players[index];
+                    return ListTile(
+                      title: Text(player.name ?? "Name not provided"),
+                      subtitle: Text(player.id ?? "ID not provided"), // Display player ID
+                      trailing: Icon(Icons.arrow_forward),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlayerProfileScreen(playerId: player.id!),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
-                String playerId = await context.read<PlayerViewModel>().addPlayer(player);
-                print("Added player with ID: $playerId");
-                Navigator.pop(context);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('There was a problem adding the player.')),
-                );
-              }
-            },
-            child: Text('Add Player'),
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _scanQrCode(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Scan QR Code"),
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.width * 0.8,
+            child: MobileScanner(
+                controller: cameraController,
+                onDetect: (capture) {
+                  final List<Barcode> barcodes = capture.barcodes;
+                  for (final barcode in barcodes) {
+                    debugPrint('Barcode found! ${barcode.rawValue}');
+                    Navigator.pop(context, barcode.rawValue); // Return the scanned value
+                    break; // exit to avoid multi adds
+                  }
+                }
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    ).then((scannedValue) {
+      if (scannedValue != null) {
+        // Handle the scanned QR code value (e.g., search for the player)
+        print('Scanned QR Code: $scannedValue');
+        // Display the selected player profile
+      }
+    });
   }
 }

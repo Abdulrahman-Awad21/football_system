@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:football_system/view_models/player_view_model.dart';
-import 'package:provider/provider.dart';
 import '../views/sector_details_screen.dart';
 
 class SectorCard extends StatelessWidget {
@@ -15,7 +13,6 @@ class SectorCard extends StatelessWidget {
         title: Text(sectorName),
         trailing: Icon(Icons.arrow_forward),
         onTap: () {
-          context.read<PlayerViewModel>().fetchPlayersBySector(sectorName);
           Navigator.push(
             context,
             MaterialPageRoute(

@@ -14,8 +14,8 @@ class PlayerViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> addPlayer(Player player) async {
-    String playerId = await _repository.addPlayer(player);
+  Future<String> addPlayer(Player player,File? image) async {
+    String playerId = await _repository.addPlayer(player,image);
     notifyListeners();
     return playerId;
   }

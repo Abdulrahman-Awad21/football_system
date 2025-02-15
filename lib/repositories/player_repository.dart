@@ -5,7 +5,7 @@
 
    class PlayerRepository {
      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-     final String collectionName = 'players';
+     final String collectionName = 'Players';
 
 
      Future<String> uploadImage(File image, String playerId) async {

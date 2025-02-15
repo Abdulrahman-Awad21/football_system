@@ -90,6 +90,7 @@ class _SectorDetailsScreenState extends State<SectorDetailsScreen> {
             child: Consumer<PlayerViewModel>(
               builder: (context, playerViewModel, child) {
                 List<Player> players = playerViewModel.players
+                // List<Player> players = playerViewModel.get_players(widget.sectorName)
                     .where((player) => player.sector == widget.sectorName)
                     .toList();
 

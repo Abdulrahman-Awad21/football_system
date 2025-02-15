@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:football_system/firebase_options.dart';
-import 'package:football_system/view_models/player_view_model.dart'; // Import PlayerViewModel
-import 'package:provider/provider.dart'; // Import Provider
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'services/auth_service.dart';
+import 'view_models/player_view_model.dart'; // Import PlayerViewModel
 import 'views/home_screen.dart';
+import 'views/login_screen.dart';
+import 'views/register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,19 +18,45 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key); // Add Key? key
-
   @override
   Widget build(BuildContext context) {
-    return MultiProvider( // Use MultiProvider for multiple providers if needed
+    return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => PlayerViewModel()), // Provide PlayerViewModel
+        Provider<AuthService>(
+          create: (_) => AuthService(),
+        ),
+        ChangeNotifierProvider<PlayerViewModel>( // Add PlayerViewModel Provider
+          create: (_) => PlayerViewModel(),
+        ),
       ],
       child: MaterialApp(
         title: 'Football Coach App',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: HomeScreen(),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => AuthenticationWrapper(),
+          '/login': (context) => LoginScreen(),
+          '/register': (context) => RegisterScreen(),
+          '/home': (context) => HomeScreen(),
+        },
       ),
+    );
+  }
+}
+
+class AuthenticationWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    return StreamBuilder<User?>(
+      stream: authService.authStateChanges,
+      builder: (_, AsyncSnapshot<User?> snapshot) {
+        if (snapshot.hasData) {
+          return HomeScreen();
+        } else {
+          return LoginScreen();
+        }
+      },
     );
   }
 }

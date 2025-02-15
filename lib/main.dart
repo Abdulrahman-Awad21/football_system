@@ -51,11 +51,11 @@ class AuthenticationWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: authService.authStateChanges,
       builder: (_, AsyncSnapshot<User?> snapshot) {
-        if (snapshot.hasData) {
-          return HomeScreen();
-        } else {
+        // if (snapshot.hasData) {
+          // return HomeScreen();
+        // } else {
           return LoginScreen();
-        }
+        // }
       },
     );
   }

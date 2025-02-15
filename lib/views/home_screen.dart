@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../view_models/player_view_model.dart';
 import 'add_player_screen.dart';
 import '../widgets/sector_card.dart';
 import '../services/auth_service.dart';
@@ -31,11 +30,12 @@ class _HomeScreenState extends State<HomeScreen> {
       String username;
 
       // If the name exists show it else check it in firestore
+      // print("user displayaaaaaaaaaaaaaaaaaa ${user.displayName}");
       if (displayName != null && displayName.isNotEmpty) {
         username = displayName;
       } else {
         try{
-        DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('Users').doc(user.uid).get();
           
          if (snapshot.exists) {
             username = snapshot.data()?['username'] ?? 'User'; // Check the username in Firestore
@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
            } catch (e) {
           username = "User";// In case of an error, return a default value
           print('Error getting display name from Firestore : ${e}');
+          // print(getCurrentUser())
           }
       }
 
@@ -69,7 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
+              print("Yaaaaaaaaaao1");
               await authService.signOut();
+              print("Yaaaaaaaaaao2");
             },
           ),
         ],

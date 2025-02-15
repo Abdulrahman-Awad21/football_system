@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../view_models/player_view_model.dart';
 import '../models/player_model.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart'; // Import image_picker
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';//Added Import
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -48,34 +47,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       final username = _usernameController.text.trim(); // Get username
 
                       try {
-                        final user = await _authService.registerWithEmailAndPassword(email, password, username); // Pass username
-                        if (user != null && FirebaseAuth.instance.currentUser != null) {
-                          // Registration Successful
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Registration successful!')),
-                          );
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomeScreen()),
-                          );
-                        } else {
-                          // Registration Failed
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Registration failed. Please try again.')),
-                          );
-                        }
+                        
+                        final result = await _authService.registerWithEmailAndPassword(email, password, username);
+                        
+                        
+                        if (result != null) {
+                          
+                           ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Registration successful!')),
+                           );
+                        // Registration Successful
+                           Navigator.pushReplacement(
+                             context,
+                              MaterialPageRoute(builder: (context) => HomeScreen()),
+                             );
+                         }else{
+                            // Registration Failed
+                            ScaffoldMessenger.of(context).showSnackBar(
+                               SnackBar(content: Text('Registration failed. Please try again.')),
+                             );
+                           }
                       } catch (error) {
-                        // Handle unexpected errors
-                        print('Error during registration: $error');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('An error occurred during registration. Please try again later.')),
-                        );
+                          // Handle unexpected errors
+                           print('Error during registration: $error');
+                           ScaffoldMessenger.of(context).showSnackBar(
+                             SnackBar(content: Text('An error occurred during registration. Please try again later.')),
+                            );
                       } finally {
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      }
-                    },
+                          setState(() {
+                           _isLoading = false;
+                           });
+                        }
+                      },
               child: _isLoading ? CircularProgressIndicator() : Text('Register'),
             ),
           ],

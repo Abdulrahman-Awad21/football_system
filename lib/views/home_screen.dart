@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:football_system/views/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'add_player_screen.dart';
 import '../widgets/sector_card.dart';
@@ -70,9 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              print("Yaaaaaaaaaao1");
+              
               await authService.signOut();
-              print("Yaaaaaaaaaao2");
+              Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+              
             },
           ),
         ],

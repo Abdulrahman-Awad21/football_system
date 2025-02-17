@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart'; // Import image_picker
 class AddPlayerScreen extends StatelessWidget {
   final String? initialSector;
 
-  AddPlayerScreen({this.initialSector});
+  const AddPlayerScreen({super.key, this.initialSector});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class AddPlayerScreen extends StatelessWidget {
 class AddPlayerForm extends StatefulWidget {
   final String? initialSector;
 
-  AddPlayerForm({this.initialSector});
+  const AddPlayerForm({super.key, this.initialSector});
 
   @override
   _AddPlayerFormState createState() => _AddPlayerFormState();

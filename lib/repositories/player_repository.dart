@@ -31,7 +31,7 @@
          }
          return docRef.id;
        } catch(e) {
-         print("Got and error when adding player: ${e}");
+         print("Got and error when adding player: $e");
          return 'An error Happen to add players';
        }
      }
@@ -66,4 +66,34 @@
      Future<void> deletePlayer(String playerId) async {
        await _firestore.collection(collectionName).doc(playerId).delete();
      }
+
+     // lib/repositories/player_repository.dart
+
+      Future<void> markAttendance(String playerId, DateTime attendanceDate) async {
+            try {
+              // Reference to the player document
+              DocumentReference playerRef = _firestore.collection(collectionName).doc(playerId);
+
+              // Update the player's attendance array by adding the new attendanceDate
+              await playerRef.update({
+                'attendance': FieldValue.arrayUnion([attendanceDate]),
+              });
+            } catch (e) {
+              print("Error marking attendance: $e");
+            }
+          }
+
+      Future<void> removeAttendance(String playerId, DateTime attendanceDate) async {
+            try {
+              // Reference to the player document
+              DocumentReference playerRef = _firestore.collection(collectionName).doc(playerId);
+
+              // Update the player's attendance array by adding the new attendanceDate
+              await playerRef.update({
+                'attendance': FieldValue.arrayRemove([attendanceDate]),
+              });
+            } catch (e) {
+              print("Error marking attendance: $e");
+            }
+          }
    }

@@ -8,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Cloud Firestore
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
            } catch (e) {
           username = "User";// In case of an error, return a default value
-          print('Error getting display name from Firestore : ${e}');
+          print('Error getting display name from Firestore : $e');
           // print(getCurrentUser())
           }
       }

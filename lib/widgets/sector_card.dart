@@ -4,7 +4,7 @@ import '../views/sector_details_screen.dart';
 class SectorCard extends StatelessWidget {
   final String sectorName;
 
-  SectorCard({required this.sectorName});
+  const SectorCard({super.key, required this.sectorName});
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,5 @@
+// lib/models/player_model.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Player {
@@ -11,6 +13,7 @@ class Player {
   final DateTime? nextRenewalDate;
   final String? qrCode;
   final String? imageUrl;
+  List<DateTime> attendance; // Add this line
 
   Player({
     this.id,
@@ -23,9 +26,10 @@ class Player {
     required this.nextRenewalDate,
     required this.qrCode,
     this.imageUrl,
+    this.attendance = const [], // Initialize with an empty list
   });
 
-  factory Player.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot,
+   factory Player.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,) {
     final data = snapshot.data();
     return Player(
@@ -39,6 +43,11 @@ class Player {
       nextRenewalDate: (data?['nextRenewalDate'] as Timestamp).toDate(),
       qrCode: data?['qrCode'],
       imageUrl: data?['imageUrl'],
+      attendance: data?['attendance'] != null
+              ? (data?['attendance'] as List<dynamic>)
+                  .map((timestamp) => (timestamp as Timestamp).toDate())
+                  .toList()
+              : [],
     );
   }
 
@@ -53,6 +62,8 @@ class Player {
       'nextRenewalDate': nextRenewalDate,
       'qrCode': qrCode,
       'imageUrl': imageUrl,
+      'attendance': attendance.map((date) => date).toList(), // Store attendance dates
+
     };
   }
 }
